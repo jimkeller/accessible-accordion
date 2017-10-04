@@ -15,7 +15,7 @@ var Accordion = function ( options ) {
     'auto_expand_first_item': false, //If you want the first item to default to expanded
     'height_buffer': 0, //If you want extra padding below the content when the accordion is expanded
     'height_units': 'px',
-    'css_style_apply': false, //if you want to apply all your own CSS, set this to false. These defaults are probably necessary though
+    'css_style_apply': false, //EXPERIMENTAL if you want to apply all your own CSS, set this to false. These defaults are probably necessary though
     'css_styles': { //if css_style_apply is true, these styles will be applied
       'collapsed': {
         'content': { 'height': '0px'  }
@@ -272,7 +272,6 @@ Accordion.prototype.active_attributes_apply = function( item ) {
 
     item.setAttribute('data-accordion-expanded', true);
     item.classList.add( this.options.class_name_expanded );
-    //this.max_height_apply(item);
 
     if ( this.options.css_style_apply ) {
       this.css_style_apply(item, { 'expanded': true });
