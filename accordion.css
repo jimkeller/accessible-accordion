@@ -1,0 +1,33 @@
+div {
+  box-sizing: border-box;
+}
+
+.accordion {
+
+}
+
+.accordion__item {
+
+}
+
+.accordion__item__heading {
+  background-color: #bbbbbb;
+}
+
+.accordion__item__heading a {
+  padding: 1rem;
+  background-color: #bbbbbb;
+  display: block;
+}
+
+.accordion__item__content {
+  background-color: #dddddd;
+  line-height: 1.2;
+  //transition: height 0.5s, padding 0.5s;
+  overflow:hidden;
+  padding:0rem;
+}
+
+.accordion__item__content__inner {
+  padding: 2rem;
+}
