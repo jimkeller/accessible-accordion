@@ -182,6 +182,25 @@ Accordion.prototype.initialize = function() {
 
 }
 
+Accordion.prototype.tabbables_toggle = function( element, action, options ) {
+
+  try {
+    options = options || {};
+
+    var tabbables = element.querySelectorAll('input, a');
+
+    var tabindex = ( action == 'disable' ) ? '-1' : '0';
+
+    for ( var j = 0; j < tabbables.length; j++ ) {
+      tabbables[j].setAttribute('tabindex', tabindex);
+    }
+  }
+  catch(e) {
+    throw e;
+  }
+
+
+}
 
 Accordion.prototype.item_expanded_height_reset = function(item, options) {
 
@@ -279,6 +298,7 @@ Accordion.prototype.active_attributes_apply = function( item ) {
 
     heading.setAttribute('aria-expanded',true);
     content.setAttribute('aria-hidden', false);
+    this.tabbables_toggle(content, 'enable');
 
   }
   catch(e) {
@@ -305,6 +325,8 @@ Accordion.prototype.item_collapse = function( item ) {
 
     heading.setAttribute('aria-expanded',false);
     content.setAttribute('aria-hidden', true);
+
+    this.tabbables_toggle(content, 'disable');
 
     //$content.slideUp();
   }
@@ -342,5 +364,6 @@ Accordion.prototype.item_expand = function( item, options ) {
 
 }
 
-
-//module.exports = Accordion; //Uncomment to use with ES6 exports
+if ( typeof module !== 'undefined' && module.exports ) {
+  module.exports = Accordion;
+}
