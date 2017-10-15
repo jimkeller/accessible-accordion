@@ -154,7 +154,7 @@ Accordion.prototype.initialize = function() {
             var click_item = document.querySelector( me.options.selector_item + '[data-accordion-item-id=' + click_item_id + ']' );
 
             if ( !click_item.classList.contains( me.options.class_name_expanded) ) {
-              me.item_expand(click_item, { scroll_to_top: true} );
+              me.item_expand(click_item, { scroll_to_top: me.options.scroll_to_top} );
             }
             else {
               me.item_collapse(click_item);
