@@ -303,26 +303,21 @@ Accordion.prototype.item_expanded_height_recalculate = function(item, options) {
       this.item_expand(item, { 'shadow_expand': true } );
     }
 
-    //
-    // Use requestAnimationFrame so that we can operate on the element after the DOM has been updated from the expansion above
-    // Without requestAnimationFrame, our height calculation is wrong if we just expanded the item above,
-    // because this code will try to read the height before the DOM has been updated
-    //
-    requestAnimationFrame(function() {
-      me.item_expanded_height_calculate(item, options);
+    //requestAnimationFrame(function() {
+    me.item_expanded_height_calculate(item, options);
 
-      if ( !was_expanded ) {
-        //
-        // Re-collapse this item if we only expanded it to do this calculation
-        //
+    if ( !was_expanded ) {
+      //
+      // Re-collapse this item if we only expanded it to do this calculation
+      //
 
-        me.item_collapse(item);
-      }
+      me.item_collapse(item);
+    }
 
-      if ( me.item_is_expanded(item) ) {
-        me.height_apply_expanded(item);
-      }
-    });
+    if ( me.item_is_expanded(item) ) {
+      me.height_apply_expanded(item);
+    }
+    //});
   }
   catch(e) {
     throw e;
