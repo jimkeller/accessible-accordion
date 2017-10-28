@@ -23,7 +23,7 @@ div {
 .accordion__item__content {
   background-color: #dddddd;
   line-height: 1.2;
-  //transition: height 0.5s, padding 0.5s;
+  transition: height 0.5s, padding 0.5s;
   overflow:hidden;
   padding:0rem;
 }
