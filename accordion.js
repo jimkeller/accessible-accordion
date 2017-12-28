@@ -122,6 +122,15 @@ Accordion.prototype.initialize = function() {
     }
   );
 
+  // 
+  // Listen for custom resize event
+  //
+  window.addEventListener('accordion-resize', 
+    function() {
+      this_accordion.resize_handler();
+    }
+  );
+
 }
 
 /**
