@@ -71,8 +71,17 @@ Accordion.prototype.resize_handler = function( options ) {
         for( var i = 0; i < items.length; i++ ) {
 
           var item = items[i];
-          this.item_expanded_height_recalculate(item, {force_expanded: true});
+          var me = this;
 
+          if ( this.item_is_expanded(item) ) {
+
+            this.item_expanded_height_reapply(item, {immediate: true});
+
+          }
+          else {
+            this.item_expanded_height_calculate(item);
+          }
+          
         }
       }
     }
@@ -80,6 +89,10 @@ Accordion.prototype.resize_handler = function( options ) {
       throw e;
     }
 
+}
+
+Accordion.prototype.item_get_content = function(item) {
+  return item.querySelector(this.option('selector_content'));
 }
 
 Accordion.prototype.initialize = function() {
@@ -95,7 +108,6 @@ Accordion.prototype.initialize = function() {
 
     var bundle = bundles[bundle_index];
     var items = bundle.querySelectorAll(this.option('selector_item'));
-    var me = this;
 
     bundle.setAttribute('role', 'tablist');
     bundle.setAttribute('id', this.option('id_prefix_bundle') + '-' + bundle_index.toString() );
@@ -259,16 +271,10 @@ Accordion.prototype.tabbables_toggle = function( element, action, options ) {
 
 }
 
-/**
- * Saves the value of the expanded height of an accordion item .
- * In order to allow us to use CSS animations, we need to know what the expanded height of the accordion contents will be
- * (as of this writing, you can't animate to height: auto)
- * This function uses the element's scrollHeight to get the expanded height of the accordion, and saves it in a data-expanded-height attribute
- *
- * @param {DomElement} item The accordion item element, e.g. as returned by querySelector
- * @param {Object} options miscellaneous options. Currently unused
- * @return none
- */
+
+
+
+ /*
 Accordion.prototype.item_expanded_height_recalculate = function(item, options) {
 
   try {
@@ -295,21 +301,27 @@ Accordion.prototype.item_expanded_height_recalculate = function(item, options) {
       //
       // Re-collapse this item if we only expanded it to do this calculation
       //
-
       me.item_collapse(item);
     }
 
-    if ( me.item_is_expanded(item) ) {
-      me.height_apply_expanded(item);
-    }
     //});
   }
   catch(e) {
     throw e;
   }
 }
+*/
 
-/* Same as above but on first initialization only */
+/**
+ * Saves the value of the expanded height of an accordion item .
+ * In order to allow us to use CSS animations, we need to know what the expanded height of the accordion contents will be
+ * (as of this writing, you can't animate to height: auto)
+ * This function uses the element's scrollHeight to get the expanded height of the accordion, and saves it in a data-expanded-height attribute
+ *
+ * @param {DomElement} item The accordion item element, e.g. as returned by querySelector
+ * @param {Object} options miscellaneous options. Currently unused
+ * @return none
+ */
 Accordion.prototype.item_expanded_height_calculate = function(item, options) {
 
     try {
@@ -317,15 +329,37 @@ Accordion.prototype.item_expanded_height_calculate = function(item, options) {
       var new_height = null;
       var content = item.querySelector(this.option('selector_content'));
 
-      content.style.removeProperty('height');
-      new_height = content.scrollHeight;
+      var content_stage = content.firstElementChild;
 
+      if ( !content_stage ) {
+        throw 'Could not find a content stage. Make sure you have an inner div inside your accordion content.';
+      }
+
+      // content.style.transitionDuration='0s'; //extremely necessary if transition "all" is set. Otherwise scrollHeight doesn't update in time for our calculation below.
+      // content.style.removeProperty('height');
+      // new_height = content.scrollHeight;
+
+      new_height = content_stage.scrollHeight;
       content.setAttribute('data-expanded-height', parseInt(new_height) + parseInt(this.option('height_buffer')) );
+      
+      //content.style.removeProperty('transition-duration');
 
     }
     catch(e) {
       throw e;
     }
+}
+
+Accordion.prototype.item_expanded_height_reapply = function(item, options) {
+
+  try {
+    this.item_expanded_height_calculate(item);
+    this.height_apply_expanded(item, options);
+  }
+  catch(e) {
+    throw e;
+  }
+
 }
 
 
@@ -382,8 +416,19 @@ Accordion.prototype.height_apply_collapsed = function(item, options) {
 
 Accordion.prototype.height_apply_expanded = function(item, options) {
 
+  options = options || {};
+
   var content = item.querySelector( this.option('selector_content') );
+
+  if ( typeof(options.immediate) != 'undefined' && options.immediate ) {
+    content.style.transitionDuration = '0s';
+  }
+
   content.style.height = content.getAttribute('data-expanded-height') + this.option('height_units');
+
+  if ( typeof(options.immediate) != 'undefined' && options.immediate ) {
+    content.style.removeProperty('transition-duration');
+  }
 
 }
 
@@ -466,6 +511,31 @@ Accordion.prototype.item_collapse = function( item ) {
   }
 
 }
+
+/*** UNUSED CURRENTLY 
+Accordion.prototype.content_clone = function( content, options ) {
+
+  try {
+    var clone = content.cloneNode(true);
+    var parent = content.parentElement;
+
+    clone.id = 'clone_' + content.id.toString();
+    clone.style.position = 'absolute';
+    clone.style.left = '-1000rem';
+    clone.style.transitionDuration = '0s';
+
+    parent.appendChild(clone);
+
+    return clone;
+
+  }
+  catch(e) {
+    throw e;
+  }
+
+}
+**/
+
 
 /**
  * Expand an accordion item
