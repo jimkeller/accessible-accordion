@@ -3,7 +3,7 @@ var Accordion = function ( options ) {
   this.options = options;
   this.initialize();
 
-}
+};
 
 /**
  * Gets an option by name, or sets an option if val parameter is present. Checks local options and falls back to global options
@@ -33,7 +33,7 @@ Accordion.prototype.option = function ( key, val ) {
     throw e;
   }
 
-}
+};
 
 /**
  * Determines whether a particular accordion item (heading + content) is expanded. Relies on the data-accordion-expanded attribute set on initialization
@@ -49,7 +49,7 @@ Accordion.prototype.item_is_expanded = function( item ) {
 
   return false;
 
-}
+};
 
 /**
  * Handler that is fired on browser resize. Primarily, this function re-saves the height of the content area on resize
@@ -89,11 +89,11 @@ Accordion.prototype.resize_handler = function( options ) {
       throw e;
     }
 
-}
+};
 
 Accordion.prototype.item_get_content = function(item) {
   return item.querySelector(this.option('selector_content'));
-}
+};
 
 Accordion.prototype.initialize = function() {
 
@@ -143,7 +143,7 @@ Accordion.prototype.initialize = function() {
     }
   );
 
-}
+};
 
 /**
  * Set the initial stte of an accordion item
@@ -171,7 +171,7 @@ Accordion.prototype.item_initialize = function( item, item_index, bundle, bundle
     heading.setAttribute('role', 'tab');
     heading.setAttribute('aria-controls', '#' + me.option('id_prefix_content') + '-' + unique_suffix );
 
-    content.setAttribute('id', me.option('id_prefix_content') + '-' + unique_suffix)
+    content.setAttribute('id', me.option('id_prefix_content') + '-' + unique_suffix);
     content.setAttribute('role', 'tabpanel');
 
     heading.addEventListener('click',
@@ -243,7 +243,7 @@ Accordion.prototype.item_initialize = function( item, item_index, bundle, bundle
     throw e;
   }
 
-}
+};
 
 /**
  * Enables or disables tabbing to elements. For accessibility compliance, certain elements have their tabindex
@@ -269,7 +269,7 @@ Accordion.prototype.tabbables_toggle = function( element, action, options ) {
     throw e;
   }
 
-}
+};
 
 
 
@@ -348,7 +348,7 @@ Accordion.prototype.item_expanded_height_calculate = function(item, options) {
     catch(e) {
       throw e;
     }
-}
+};
 
 Accordion.prototype.item_expanded_height_reapply = function(item, options) {
 
@@ -360,7 +360,7 @@ Accordion.prototype.item_expanded_height_reapply = function(item, options) {
     throw e;
   }
 
-}
+};
 
 
 /**
@@ -406,13 +406,13 @@ Accordion.prototype.bundle_collapse = function( bundle, options ) {
     throw e;
   }
 
-}
+};
 
 Accordion.prototype.height_apply_collapsed = function(item, options) {
   var content = item.querySelector( this.option('selector_content') );
   content.style.height = '0' + this.option('height_units');
 
-}
+};
 
 Accordion.prototype.height_apply_expanded = function(item, options) {
 
@@ -430,7 +430,7 @@ Accordion.prototype.height_apply_expanded = function(item, options) {
     content.style.removeProperty('transition-duration');
   }
 
-}
+};
 
 Accordion.prototype.active_attributes_apply = function( item ) {
   try {
@@ -453,7 +453,7 @@ Accordion.prototype.active_attributes_apply = function( item ) {
   catch(e) {
     throw e;
   }
-}
+};
 
 /**
  * Get an accordion item's bundle
@@ -479,7 +479,7 @@ Accordion.prototype.bundle_by_item = function( item ) {
   catch(e) {
     throw e;
   }
-}
+};
 
 Accordion.prototype.item_collapse = function( item ) {
 
@@ -510,7 +510,7 @@ Accordion.prototype.item_collapse = function( item ) {
     throw e;
   }
 
-}
+};
 
 /*** UNUSED CURRENTLY 
 Accordion.prototype.content_clone = function( content, options ) {
@@ -564,13 +564,13 @@ Accordion.prototype.item_expand = function( item, options ) {
         this.bundle_collapse( this.bundle_by_item(item), { except_item: item } );
       }
 
-      if ( typeof(options.scroll_to_top) !='undefined' && options.scroll_to_top == true) {
+      if ( typeof(options.scroll_to_top.enabled) !='undefined' && options.scroll_to_top.enabled == true) {
 
-        if ( this.option('selector_scroll_element') == 'window' ) {
+        if ( this.option('scroll_to_top.selector_scroll_element') == window ) {
           window.scrollTo( 0, item.offsetTop );
         }
         else {
-          document.querySelector(this.option('selector_scroll_element')).scrollTop = item.offsetTop;
+          document.querySelector(this.option('scroll_to_top.selector_scroll_element')).scrollTop = item.offsetTop;
         }
       }
     }
@@ -579,6 +579,86 @@ Accordion.prototype.item_expand = function( item, options ) {
     throw e;
   }
 
+};
+
+
+/**
+ * Get or set the scroll position of an element or window.
+ */
+var scroll_position = function (scroll_element, value) {
+  if(typeof value === undefined) {
+    if(scroll_element == window) {
+      return (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0);
+    }
+    else {
+      return document.querySelector(scroll_element).scrollTop;
+    }
+  }
+  else {
+    if ( scroll_element == window ) {
+      return scroll_element.scrollTo( 0, value );
+    }
+    else {
+      return document.querySelector(scroll_element).scrollTop = value;
+    }
+  }
+};
+
+
+
+/**
+ * Transition an element between two values.
+ * This function uses setInterval for it's animation loop because it's intended for short animations and allows for more consistent fps.
+ * If a transition is triggered on the same element before a previous transition is complete, the previous one will be canceled.
+ *
+ * @param {DomElement} element The element the transition is being performed on.
+ * @param {number} from The beginning value for the transition.
+ * @param {number} to The ending value for the transition.
+ * @param {function} set_function A setter function that will update the element with the new values.
+ * @param {number} duration The length of time (milliseconds) the transition will take.
+ * @param {function} ease_function A custom ease function for the step calculations.
+ * @param {number} interval The amount of time (milliseconds) each animation step will take.
+ * @return none
+ */
+
+Accordion.prototype.transition = function (element, from, to, set_function, duration, ease_function, interval) {
+  var difference = to - from;
+  var time_start = new Date().getTime();
+  var time_end = time_start + duration;
+
+  set_function(element, from);
+
+  // End previous running transitioning.
+  if( element.animation_loop ) {
+    clearInterval(element.animation_loop);
+  }
+
+  var animation_loop = setInterval(function () {
+    var time_current = new Date().getTime();
+    var time_passed = time_current - time_start;
+    var duration_percent = time_passed / duration;
+    var ease_percent = ease_function(duration_percent);
+
+    // Limit the ease percent to 100%.
+    if( ease_percent > 1 ) {
+      ease_percent = 1;
+    }
+
+    var transition_interval_value = (ease_percent * difference) + from;
+    set_function(element, transition_interval_value);
+
+    if( time_current >= time_end ) {
+      clearInterval(animation_loop);
+      set_function(element, to);
+      element.animation_loop = false;
+    }
+  }, interval);
+
+  element.animation_loop = animation_loop;
+};
+
+if ( typeof module !== 'undefined' && module.exports ) {
+  module.exports = Accordion;
 }
 
 /**
@@ -596,11 +676,7 @@ Accordion.obj_get_if_set = function( obj, keys ) {
   catch(e) {
     return undefined;
   }
-}
-
-if ( typeof module !== 'undefined' && module.exports ) {
-  module.exports = Accordion;
-}
+};
 
 Accordion.options_default = function() {
   return {
@@ -611,8 +687,17 @@ Accordion.options_default = function() {
     'id_prefix_content': 'accordion-content',
     'id_prefix_bundle': 'accordion-bundle',
     'selector_tabbable_elements': 'input, a', //selector for elements that can be tabbed to. These are disabled in the accordion content when the accordion is closed
-    'scroll_to_top': true,
-    'selector_scroll_element': 'window', //What container to scroll when accordion opens
+    'scroll_to_top': {
+      'enabled': true,
+      'selector_scroll_element': window, // What container to scroll when accordion opens.
+      //'offset_top': 0, // For sticky headers, accepts a number or an element selector. (NOT IMPLEMENTED YET)
+      'transition': {
+        'enabled': true,
+        'duration': 250, // How many milliseconds the transition animation will take.
+        'function_scroll_ease': function easeInOutQuad(t) { return t<0.5 ? 2*t*t : -1+(4-2*t)*t; },
+        'draw_interval': 20 // How many milliseconds each animation step will take (lower = smoother animations).
+      }
+    },
     'class_name_expanded': 'expanded', //Class name for 'expanded' accordion
     'auto_expand_first_item': false, //If you want the first item to default to expanded
     'item_expand_unique': false, //If true, other items will be closed when an item is expanded
@@ -648,5 +733,5 @@ Accordion.options_default = function() {
       },
       'expanded': {}
     }
-  }
-}
+  };
+};
