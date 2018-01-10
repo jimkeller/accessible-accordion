@@ -566,11 +566,23 @@ Accordion.prototype.item_expand = function( item, options ) {
 
       if ( typeof(options.scroll_to_top.enabled) !='undefined' && options.scroll_to_top.enabled == true) {
 
-        if ( this.option('scroll_to_top.selector_scroll_element') == window ) {
-          window.scrollTo( 0, item.offsetTop );
+        if ( typeof(options.scroll_to_top.transition.enabled) != 'undefined' && options.scroll_to_top.transition.enabled == true) {
+          console.log('element');
+          console.log(options.scroll_to_top.selector_scroll_element);
+          console.log('from');
+          console.log(this.scroll_position(options.scroll_to_top.selector_scroll_element));
+          this.transition(
+            options.scroll_to_top.selector_scroll_element,
+            this.scroll_position(options.scroll_to_top.selector_scroll_element),
+            item.offsetTop,
+            this.scroll_position,
+            options.scroll_to_top.transition.duration,
+            options.scroll_to_top.transition.function_scroll_ease,
+            options.scroll_to_top.transition.animation_interval
+          );
         }
         else {
-          document.querySelector(this.option('scroll_to_top.selector_scroll_element')).scrollTop = item.offsetTop;
+          this.scroll_position(this.options.scroll_to_top.selector_scroll_element, item.offsetTop);
         }
       }
     }
@@ -581,12 +593,30 @@ Accordion.prototype.item_expand = function( item, options ) {
 
 };
 
+/*
+Accordion.prototype.transition = function (element, from, to, set_function, duration, ease_function, interval) {
+
+'scroll_to_top': {
+  'enabled': true,
+  'selector_scroll_element': window, // What container to scroll when accordion opens.
+  //'offset_top': 0, // For sticky headers, accepts a number or an element selector. (NOT IMPLEMENTED YET)
+  'transition': {
+    'enabled': true,
+    'duration': 250, // How many milliseconds the transition animation will take.
+    'function_scroll_ease': function easeInOutQuad(t) { return t<0.5 ? 2*t*t : -1+(4-2*t)*t; },
+    'animation_interval': 20 // How many milliseconds each animation step will take (lower = smoother animations).
+  }
+},
+*/
+
 
 /**
  * Get or set the scroll position of an element or window.
  */
-var scroll_position = function (scroll_element, value) {
-  if(typeof value === undefined) {
+Accordion.prototype.scroll_position = function (scroll_element, value) {
+  // Get
+  if(value === undefined) {
+    console.log('undefined check');
     if(scroll_element == window) {
       return (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0);
     }
@@ -594,6 +624,7 @@ var scroll_position = function (scroll_element, value) {
       return document.querySelector(scroll_element).scrollTop;
     }
   }
+  // Set
   else {
     if ( scroll_element == window ) {
       return scroll_element.scrollTo( 0, value );
@@ -690,12 +721,13 @@ Accordion.options_default = function() {
     'scroll_to_top': {
       'enabled': true,
       'selector_scroll_element': window, // What container to scroll when accordion opens.
-      //'offset_top': 0, // For sticky headers, accepts a number or an element selector. (NOT IMPLEMENTED YET)
+      //'offset_top': 0, // (FUTURE FEATURE, NOT IMPLEMENTED YET) For sticky headers, accepts a number or an element selector.
       'transition': {
         'enabled': true,
+        //'scroll_interrupt': false, // (FUTURE FEATURE, NOT IMPLEMENTED YET) If true, the transition animation will be canceled when a user scrolls during the transition.
         'duration': 250, // How many milliseconds the transition animation will take.
         'function_scroll_ease': function easeInOutQuad(t) { return t<0.5 ? 2*t*t : -1+(4-2*t)*t; },
-        'draw_interval': 20 // How many milliseconds each animation step will take (lower = smoother animations).
+        'animation_interval': 20 // How many milliseconds each animation step will take (lower = smoother animations).
       }
     },
     'class_name_expanded': 'expanded', //Class name for 'expanded' accordion
