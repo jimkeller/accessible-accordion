@@ -612,7 +612,6 @@ Accordion.prototype.transition = function (element, from, to, set_function, dura
 Accordion.prototype.scroll_position = function (scroll_element, value) {
   // Get
   if(value === undefined) {
-    console.log('undefined check');
     if(scroll_element == window) {
       return (window.pageYOffset || document.documentElement.scrollTop)  - (document.documentElement.clientTop || 0);
     }
