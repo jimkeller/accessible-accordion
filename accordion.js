@@ -564,25 +564,21 @@ Accordion.prototype.item_expand = function( item, options ) {
         this.bundle_collapse( this.bundle_by_item(item), { except_item: item } );
       }
 
-      if ( typeof(options.scroll_to_top.enabled) !='undefined' && options.scroll_to_top.enabled == true) {
+      if ( typeof(this.option('scroll_to_top.enabled')) !='undefined' && this.option('scroll_to_top.enabled') == true) {
 
-        if ( typeof(options.scroll_to_top.transition.enabled) != 'undefined' && options.scroll_to_top.transition.enabled == true) {
-          console.log('element');
-          console.log(options.scroll_to_top.selector_scroll_element);
-          console.log('from');
-          console.log(this.scroll_position(options.scroll_to_top.selector_scroll_element));
+        if ( typeof(this.option('scroll_to_top.transition.enabled')) != 'undefined' && this.option('scroll_to_top.transition.enabled') == true) {
           this.transition(
-            options.scroll_to_top.selector_scroll_element,
-            this.scroll_position(options.scroll_to_top.selector_scroll_element),
+            this.option('scroll_to_top.selector_scroll_element'),
+            this.scroll_position(this.option('scroll_to_top.selector_scroll_element')),
             item.offsetTop,
             this.scroll_position,
-            options.scroll_to_top.transition.duration,
-            options.scroll_to_top.transition.function_scroll_ease,
-            options.scroll_to_top.transition.animation_interval
+            this.option('scroll_to_top.transition.duration'),
+            this.option('scroll_to_top.transition.function_scroll_ease'),
+            this.option('scroll_to_top.transition.animation_interval')
           );
         }
         else {
-          this.scroll_position(this.options.scroll_to_top.selector_scroll_element, item.offsetTop);
+          this.scroll_position(this.option('scroll_to_top.selector_scroll_element'), item.offsetTop);
         }
       }
     }
