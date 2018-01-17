@@ -547,11 +547,11 @@ Accordion.prototype.content_clone = function( content, options ) {
  * }
  * @return none
  */
-Accordion.prototype.item_expand = function( item, options ) {
+Accordion.prototype.item_expand = function( item, local_options ) {
 
   try {
 
-    options = options || {};
+    local_options = local_options || {};
 
     var content = item.querySelector( this.option('selector_content') );
 
@@ -559,26 +559,26 @@ Accordion.prototype.item_expand = function( item, options ) {
     this.height_apply_expanded(item);
     //$content.slideDown( 400 );
 
-    if ( typeof(options.shadow_expand) == 'undefined' || options.shadow_expand == false ) {
+    if ( typeof(local_options.shadow_expand) == 'undefined' || local_options.shadow_expand == false ) {
       if ( typeof(this.option('item_expand_unique')) !== 'undefined' && this.option('item_expand_unique') == true ) {
         this.bundle_collapse( this.bundle_by_item(item), { except_item: item } );
       }
 
-      if ( typeof(this.option('scroll_to_top.enabled')) !='undefined' && this.option('scroll_to_top.enabled') == true) {
+      if ( typeof(local_options.scroll_to_top) != 'undefined' && local_options.scroll_to_top != false) {
 
-        if ( typeof(this.option('scroll_to_top.transition.enabled')) != 'undefined' && this.option('scroll_to_top.transition.enabled') == true) {
-          this.transition(
+        if ( this.option('scroll_to_top.transition.enabled') == true) {
+          Accordion.scroll_to_element(
             this.option('scroll_to_top.selector_scroll_element'),
-            this.scroll_position(this.option('scroll_to_top.selector_scroll_element')),
+            Accordion.scroll_position(this.option('scroll_to_top.selector_scroll_element')),
             item.offsetTop,
-            this.scroll_position,
+            Accordion.scroll_position,
             this.option('scroll_to_top.transition.duration'),
             this.option('scroll_to_top.transition.function_scroll_ease'),
             this.option('scroll_to_top.transition.animation_interval')
           );
         }
         else {
-          this.scroll_position(this.option('scroll_to_top.selector_scroll_element'), item.offsetTop);
+          Accordion.scroll_position(this.option('scroll_to_top.selector_scroll_element'), item.offsetTop);
         }
       }
     }
@@ -589,27 +589,10 @@ Accordion.prototype.item_expand = function( item, options ) {
 
 };
 
-/*
-Accordion.prototype.transition = function (element, from, to, set_function, duration, ease_function, interval) {
-
-'scroll_to_top': {
-  'enabled': true,
-  'selector_scroll_element': window, // What container to scroll when accordion opens.
-  //'offset_top': 0, // For sticky headers, accepts a number or an element selector. (NOT IMPLEMENTED YET)
-  'transition': {
-    'enabled': true,
-    'duration': 250, // How many milliseconds the transition animation will take.
-    'function_scroll_ease': function easeInOutQuad(t) { return t<0.5 ? 2*t*t : -1+(4-2*t)*t; },
-    'animation_interval': 20 // How many milliseconds each animation step will take (lower = smoother animations).
-  }
-},
-*/
-
-
 /**
  * Get or set the scroll position of an element or window.
  */
-Accordion.prototype.scroll_position = function (scroll_element, value) {
+Accordion.scroll_position = function (scroll_element, value) {
   // Get
   if(value === undefined) {
     if(scroll_element == window) {
@@ -646,8 +629,8 @@ Accordion.prototype.scroll_position = function (scroll_element, value) {
  * @param {number} interval The amount of time (milliseconds) each animation step will take.
  * @return none
  */
+Accordion.scroll_to_element = function (element, from, to, set_function, duration, ease_function, interval) {
 
-Accordion.prototype.transition = function (element, from, to, set_function, duration, ease_function, interval) {
   var difference = to - from;
   var time_start = new Date().getTime();
   var time_end = time_start + duration;
@@ -720,7 +703,7 @@ Accordion.options_default = function() {
       'transition': {
         'enabled': true,
         //'scroll_interrupt': false, // (FUTURE FEATURE, NOT IMPLEMENTED YET) If true, the transition animation will be canceled when a user scrolls during the transition.
-        'duration': 250, // How many milliseconds the transition animation will take.
+        'duration': 450, // How many milliseconds the transition animation will take.
         'function_scroll_ease': function easeInOutQuad(t) { return t<0.5 ? 2*t*t : -1+(4-2*t)*t; },
         'animation_interval': 20 // How many milliseconds each animation step will take (lower = smoother animations).
       }
