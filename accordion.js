@@ -564,7 +564,7 @@ Accordion.prototype.item_expand = function( item, local_options ) {
         this.bundle_collapse( this.bundle_by_item(item), { except_item: item } );
       }
 
-      if ( typeof(local_options.scroll_to_top) != 'undefined' && local_options.scroll_to_top != false) {
+      if ( typeof(local_options.scroll_to_top) != 'undefined' && local_options.scroll_to_top.enabled != false) {
 
         if ( this.option('scroll_to_top.transition.enabled') == true) {
           Accordion.scroll_to_element(
