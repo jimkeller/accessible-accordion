@@ -1,5 +1,7 @@
 var Accordion = function ( options ) {
 
+  Accordion.instantiation_count++;
+
   this.options = options;
   this.initialize();
 
@@ -110,7 +112,7 @@ Accordion.prototype.initialize = function() {
     var items = bundle.querySelectorAll(this.option('selector_item'));
 
     bundle.setAttribute('role', 'tablist');
-    bundle.setAttribute('id', this.option('id_prefix_bundle') + '-' + bundle_index.toString() );
+    bundle.setAttribute('id', Accordion.instantiation_count.toString() + '_' + this.option('id_prefix_bundle') + '-' + bundle_index.toString() );
 
     for( var item_index = 0; item_index < items.length; item_index++ ) {
       this.item_initialize(items[item_index], item_index, bundle, bundle_index);
@@ -162,7 +164,7 @@ Accordion.prototype.item_initialize = function( item, item_index, bundle, bundle
     var callback;
     var heading = item.querySelector(this.option('selector_heading'));
     var content = item.querySelector(this.option('selector_content'));
-    var unique_suffix = bundle_index.toString() + '_' + item_index.toString();
+    var unique_suffix = Accordion.instantiation_count.toString() + '_' + bundle_index.toString() + '_' + item_index.toString();
     var item_unique_id = this.option('selector_bundle').replace(/[^A-Za-z0-9-_]*/g, '') + '_' + unique_suffix;
 
     item.setAttribute('data-accordion-item-id', item_unique_id );
@@ -745,3 +747,5 @@ Accordion.options_default = function() {
     }
   };
 };
+
+Accordion.instantiation_count = 0;
