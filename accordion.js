@@ -171,7 +171,7 @@ Accordion.prototype.item_initialize = function( item, item_index, bundle, bundle
     item.setAttribute('data-accordion-bundle-id', bundle.getAttribute('id') );
     heading.setAttribute('data-accordion-header-for', item_unique_id);
     heading.setAttribute('role', 'tab');
-    heading.setAttribute('aria-controls', '#' + me.option('id_prefix_content') + '-' + unique_suffix );
+    heading.setAttribute('aria-controls', me.option('id_prefix_content') + '-' + unique_suffix );
 
     content.setAttribute('id', me.option('id_prefix_content') + '-' + unique_suffix);
     content.setAttribute('role', 'tabpanel');
