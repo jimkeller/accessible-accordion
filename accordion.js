@@ -166,6 +166,7 @@ Accordion.prototype.item_initialize = function( item, item_index, bundle, bundle
     var content = item.querySelector(this.option('selector_content'));
     var unique_suffix = Accordion.instantiation_count.toString() + '_' + bundle_index.toString() + '_' + item_index.toString();
     var item_unique_id = this.option('selector_bundle').replace(/[^A-Za-z0-9-_]*/g, '') + '_' + unique_suffix;
+    var callback_params = { item: item, bundle: bundle, accordion_object: me };
 
     item.setAttribute('data-accordion-item-id', item_unique_id );
     item.setAttribute('data-accordion-bundle-id', bundle.getAttribute('id') );
@@ -182,7 +183,6 @@ Accordion.prototype.item_initialize = function( item, item_index, bundle, bundle
         var callback;
         var click_target  = event.currentTarget;
         var click_item_id = click_target.getAttribute('data-accordion-header-for');
-        var callback_params = { item: item, bundle: bundle, accordion_object: me };
 
         if ( click_item_id != null ) {
 
